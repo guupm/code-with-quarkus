@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>League of Legends - 메인 페이지</title>
@@ -21,6 +22,7 @@
         .btn-primary:hover { background-color: #800080; }
     </style>
 </head>
+<link rel="stylesheet" href="../css/download_home.css">
 <body>
 
     <!-- 헤더 (Navbar) -->
@@ -65,7 +67,7 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">다운로드</a>
+                        <a class="nav-link active" aria-current="page" href="main_page_sub/download.html">다운로드</a>
                     </li>
 
                     <li class="nav-item">
@@ -123,21 +125,32 @@
 
             <div class="col">
             <div class="card bg-dark text-white border-secondary h-100">
-            <img src="https://ddragon.leagueoflegends.com/cdn/15.24.1/img/champion/Aatrox.png" class="card-img-top" alt="아트록스">
-            <div class="card-body">
-            <h5 class="card-title">아트록스 (Aatrox)</h5>
-            <p class="card-text small">역할: 전사 / 난이도: 상</p>
+                <img src="https://ddragon.leagueoflegends.com/cdn/15.24.1/img/champion/Aatrox.png" class="card-img-top" alt="아트록스">
+                <div class="card-body">
+                <h5 class="card-title">아트록스 (Aatrox)</h5>
+                <p class="card-text small">역할: 전사 / 난이도: 상</p>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                <button class="btn btn-outline-light w-100"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalAatrox"
+                        data-url="/modal/Aatrox.html">
+                    상세보기
+                </button>
+                </div>
             </div>
-            <div class="card-footer bg-transparent border-0">
-            <button class="btn btn-outline-light w-100"
-            data-bs-toggle="modal"
-            data-bs-target="#modalAatrox"
-            data-champ="Aatrox">
-            상세보기
-            </button>
             </div>
-            </div>
-            </div>
+
+            <script>
+            function loadModal(url) {
+                fetch(url)
+                    .then(res => res.text())
+                    .then(data => {
+                    document.getElementById("modalContent").innerHTML = data;
+                    })
+                    .catch(err => console.error(err));
+            }
+            </script>
 
             <!-- Sylas -->
             <div class="col-md-6 col-lg-4 col-xl-2">
@@ -217,5 +230,29 @@
         </div>
     </section>
     
-</body>
+ <!-- 공용 모달 -->
+<div class="modal fade" id="modalAatrox" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" id="modalContent"></div>
+  </div>
+</div>
+
+<!-- ✅ JS는 여기 -->
+<script>
+const modal = document.getElementById('modalAatrox');
+
+modal.addEventListener('show.bs.modal', function (event) {
+    const button = event.relatedTarget;
+    const url = button.getAttribute('data-url');
+
+    fetch(url)
+        .then(res => res.text())
+        .then(data => {
+            document.getElementById("modalContent").innerHTML = data;
+        })
+        .catch(err => console.error(err));
+});
+</script>
+    
+</body> 
 </html>
