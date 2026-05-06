@@ -10,9 +10,9 @@
     <script src="js/bootstrap.bundle.min.js"></script>
     <!-- <script src="js/test.js"></script> -->
     <link rel="stylesheet" href="css/main.css">
-    <script src="js/test2.js"></script>
-    <script src="js/test.js"></script>
-    <script src="js/toggle.js"></script>
+    <script src="../js/test2.js"></script>
+    <script src="../js/test.js"></script>
+    <script src="../js/toggle.js"></script>
     <script>
         window.onload = function() {
             alert("메인 페이지 로딩 완료");
@@ -85,8 +85,10 @@
                         <a class="nav-link active" aria-current="page" href="main_page_sub/download.html">다운로드</a>
                     </li>
 
+                   <!-- 기존 로그인 버튼제거, 로그아웃버튼추가-->
                     <li class="nav-item">
-                        <a class="nav-link" href="/login">로그인</a>
+                        <a class="nav-link btn btn-outline-danger btn-sm px-3" 
+                        href="/logout">로그아웃</a>
                     </li>
 
                     <li class="nav-item dropdown">

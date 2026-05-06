@@ -14,3 +14,4 @@ public class GreetingResource {
         return "Hello from Quarkus REST";
     }
 }
+
