@@ -9,10 +9,8 @@ import jakarta.inject.Inject;
 import io.vertx.core.Vertx;
 
 public class SessionConfig{
-
     @Inject // 컨테이너자동주입
     Vertx vertx; // 세션저장소관리
-
     public void init(@Observes Router router) {
         router.route().handler(
             SessionHandler
