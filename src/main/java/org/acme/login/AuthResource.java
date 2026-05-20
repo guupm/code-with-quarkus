@@ -11,6 +11,25 @@ import io.vertx.ext.web.RoutingContext;
 
 @Path("/") // 기본경로가최상위/
 public class AuthResource {
+    
+    @GET
+    @Produces(MediaType.TEXT_HTML)
+    public Response mainPage() {
+        String loginUser = context.session().get("loginUser");
+
+        System.out.println("=== [GET /] 세션 ID : " + 
+    context.session().id());
+        System.out.println("=== [GET /] loginUser : " + loginUser);
+
+    String htmlPath = (loginUser != null)
+        ? "META-INF/resources/login/main_after_login.html"
+        : "META-INF/resources/main_index.html";
+
+        InputStream html = 
+    getClass().getClassLoader().getResourceAsStream(htmlPath);
+        return Response.ok(html).build();
+    }
+
 
     // GET /login → 로그인HTML 페이지반환
     @GET
@@ -104,6 +123,56 @@ public class AuthResource {
             .getClassLoader()
             .getResourceAsStream(
             "META-INF/resources/login/register.html");
+        return Response.ok(html).build();
+    }
+
+    @POST
+    @Path("/register_check")
+    @Transactional
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.TEXT_HTML)
+    public Response registerCheck(
+        @FormParam("username") String username,
+        @FormParam("password") String password,  // SHA-256 해시값
+        @FormParam("email")    String email,
+        @FormParam("phone")    String phone) {
+
+    // ①아이디중복체크
+    if (User.findByUsername(username) != null) {
+        return Response
+            .seeOther(URI.create("/register?error=duplicate_username"))
+            .build();
+    }
+
+    // ②이메일중복체크
+    if (User.findByEmail(email) != null) {
+        return Response
+            .seeOther(URI.create("/register?error=duplicate_email"))
+            .build();
+    }
+
+    // ③DB 삽입
+    User newUser = new User();
+    newUser.username = username;
+    newUser.password = password;   // 해시값저장
+    newUser.email    = email;
+    newUser.phone    = phone;
+    newUser.persist();
+
+    // ④가입완료페이지로이동
+    return Response
+        .seeOther(URI.create("/register_success"))
+        .build();
+    }
+
+    @GET
+    @Path("/register_success")
+    @Produces(MediaType.TEXT_HTML)
+    public Response registerSuccess() {
+        InputStream html = getClass()
+            .getClassLoader()
+            .getResourceAsStream(
+            "META-INF/resources/login/register_success.html");
         return Response.ok(html).build();
     }
 }
