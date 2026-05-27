@@ -175,4 +175,112 @@ public class AuthResource {
             "META-INF/resources/login/register_success.html");
         return Response.ok(html).build();
     }
+
+    @GET
+    @Path("/profile")
+    @Produces(MediaType.TEXT_HTML)
+    public Response profilePage() {
+
+        // ①세션체크(로그인안한사용자차단)
+        String loginUser = context.session().get("loginUser");
+        if (loginUser == null) {
+            return Response
+                .seeOther(URI.create("/login"))
+                .build();
+        }
+
+        // ②DB에서사용자정보조회
+        User user = User.findByUsername(loginUser);
+
+        // ③세션에사용자정보저장(HTML에서활용)
+        context.session().put("userEmail", user.email);
+        context.session().put("userPhone", user.phone);
+        context.session().put("profileImage",
+            user.profileImage != null ? user.profileImage : "default.png");
+
+        // ④프로필페이지반환
+        InputStream html = getClass()
+            .getClassLoader()
+            .getResourceAsStream(
+            "META-INF/resources/login/profile.html");
+        return Response.ok(html).build();
+    }
+    
+    @GET
+    @Path("/profile/info")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response profileInfo() {
+
+    // 세션체크
+    String loginUser= context.session().get("loginUser");
+    if (loginUser== null) {
+        return Response.status(401).build();
+    }
+
+    // DB 조회
+    User user= User.findByUsername(loginUser);
+
+    // JSON 응답
+    return Response.ok(
+        Map.of(
+            "username",     user.username,
+            "email",        user.email != null ? user.email : "",
+            "phone",        user.phone != null ? user.phone : "",
+            "profileImage", user.profileImage!= null
+                ? user.profileImage: ""
+            )
+        ).build();
+    }
+
+    @POST
+    @Path("/profile/upload")
+    @Transactional
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public Response profileUpload(
+    @RestForm("profileImage") FileUpload file) {
+
+    // ①세션체크
+    String loginUser= context.session().get("loginUser");
+    if (loginUser== null) {
+        return Response
+            .seeOther(URI.create("/login"))
+            .build();
+    }
+
+    try {
+    // ②확장자검사
+    String original = file.fileName();
+    String ext= original.substring(
+        original.lastIndexOf('.') + 1).toLowerCase();
+        if (!ext.matches("jpg|jpeg|png|gif|webp")) {
+            return Response
+                .seeOther(URI.create("/profile?error=invalid_type"))
+                .build();
+            }
+    // ③파일크기검사(5MB)
+    if (file.size() > 5 * 1024 * 1024) {
+        return Response
+            .seeOther(URI.create("/profile?error=too_large"))
+            .build();
+        }
+    // ④UUID 파일명생성+ 저장
+    String newFileName= UUID.randomUUID() + "." + ext;
+    java.nio.file.PathuploadDir= Paths.get(
+        "src/main/resources/META-INF/resources/uploads/profile");
+    java.nio.file.Files.createDirectories(uploadDir);
+    java.nio.file.Files.copy(file.uploadedFile(),
+        uploadDir.resolve(newFileName),
+        java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+    // ⑤DB 업데이트
+    User user= User.findByUsername(loginUser);
+    user.profileImage= newFileName;
+    return Response
+    .seeOther(URI.create("/profile"))
+    .build();
+    } catch (Exception e) {
+        return Response
+            .seeOther(URI.create("/profile?error=upload_fail"))
+            .build();
+        }
+    }
 }

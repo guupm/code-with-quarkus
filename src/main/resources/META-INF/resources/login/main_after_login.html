@@ -15,7 +15,7 @@
     <script src="../js/toggle.js"></script>
     <script>
         window.onload = function() {
-            alert("메인 페이지 로딩 완료");
+            showToast('메인페이지로딩완료');
         }
     </script>
 
@@ -87,9 +87,10 @@
 
                    <!-- 기존 로그인 버튼제거, 로그아웃버튼추가-->
                     <li class="nav-item">
-                        <a class="nav-link" href="/profile">
-                            프로필
-                        </a>
+                        <a class="nav-link" href="/profile"
+                        id="profileNavLink"
+                        data-bs-toggle="tooltip"
+                        data-bs-placement="bottom">👤프로필</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link btn btn-outline-danger btn-sm px-3" 
