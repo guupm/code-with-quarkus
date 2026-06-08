@@ -9,6 +9,14 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import io.vertx.ext.web.RoutingContext;
 
+import java.util.Map;
+import java.util.UUID;
+import java.nio.file.Paths;
+
+// RESTEasy Reactive를 사용하는 경우 (Quarkus 기본)
+import org.jboss.resteasy.reactive.RestForm;
+import org.jboss.resteasy.reactive.multipart.FileUpload;
+
 @Path("/") // 기본경로가최상위/
 public class AuthResource {
     
@@ -265,7 +273,7 @@ public class AuthResource {
         }
     // ④UUID 파일명생성+ 저장
     String newFileName= UUID.randomUUID() + "." + ext;
-    java.nio.file.PathuploadDir= Paths.get(
+    java.nio.file.Path uploadDir= Paths.get(
         "src/main/resources/META-INF/resources/uploads/profile");
     java.nio.file.Files.createDirectories(uploadDir);
     java.nio.file.Files.copy(file.uploadedFile(),
@@ -274,9 +282,11 @@ public class AuthResource {
     // ⑤DB 업데이트
     User user= User.findByUsername(loginUser);
     user.profileImage= newFileName;
+
     return Response
-    .seeOther(URI.create("/profile"))
-    .build();
+        .seeOther(URI.create("/profile"))
+        .build();
+        
     } catch (Exception e) {
         return Response
             .seeOther(URI.create("/profile?error=upload_fail"))
