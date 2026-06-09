@@ -43,7 +43,7 @@ function performSearch(query) {
 
     if (exactMatch) {
         // 정확히 일치하는 챔피언이 있으면 모달창 띄우기
-        fetch(`./modal/${exactMatch.engName}.html`)
+        fetch(`/modal/${exactMatch.engName}.html`)
             .then(res => {
                 if (!res.ok) throw new Error("데이터를 불러오지 못했습니다.");
                 return res.text();
@@ -62,7 +62,7 @@ function performSearch(query) {
             .catch(err => console.error(err));
 
         showMainScreen(); 
-        return; 
+        return;
     }
 
     // 정확히 일치하지 않을 때 (예: "전사", "미드") 기존처럼 리스트 보여주기
@@ -83,7 +83,7 @@ function performSearch(query) {
     const champList = document.getElementById('championResultList'); 
     if (champResults.length === 0) {
         champList.innerHTML = `<div class="no-result"><h4>검색결과 없음</h4><p>"${query}"에 해당하는 챔피언이 없습니다.</p></div>`;
-    } else {
+   } else {
         champList.innerHTML = champResults.map(c => `
             <div class="search-result-card d-flex align-items-center p-0 overflow-hidden" 
                  style="background-color: #1e1e1e; color: #fff; margin-bottom: 10px; border-radius: 8px; cursor: pointer; transition: transform 0.2s;"
@@ -91,8 +91,7 @@ function performSearch(query) {
                  onmouseout="this.style.transform='scale(1)'"
                  data-bs-toggle="modal" 
                  data-bs-target="#championModal" 
-                 data-url="./modal/${c.engName}.html">
-                <img src="${c.img}" alt="${c.name}" style="width: 80px; height: 80px; object-fit: cover;" onerror="this.src='/image/LOL.png'">
+                 data-url="/modal/${c.engName}.html"> <img src="${c.img}" alt="${c.name}" style="width: 80px; height: 80px; object-fit: cover;" onerror="this.src='/image/LOL.png'">
                 <div class="p-3">
                     <div style="font-weight:700; font-size:1rem; color:#fff;">${c.name} <span style="color:#aaa; font-size:0.85rem;">(${c.engName})</span></div>
                     <div style="color:#bbb; font-size:0.9rem; margin-top:4px;">역할: ${c.role} &nbsp;|&nbsp; 라인: ${c.lane} &nbsp;|&nbsp; 난이도: ${c.difficulty}</div>

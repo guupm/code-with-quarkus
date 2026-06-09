@@ -13,25 +13,14 @@
     <script src="../js/test.js"></script>
     <script src="../js/toggle.js"></script>
 
-    <script>
-        window.onload = function() {
-            showToast('메인페이지로딩완료');
-        }
-    </script>
-
     <style>
-        body { 
-            background-color: #0a0e17; 
-            color: #fff; 
-            font-family: 'Arial', sans-serif; 
-            /* body에 있던 배경 이미지 설정 제거 */
-        }
+        body { background-color: #0a0e17; color: #fff; font-family: 'Arial', sans-serif; }
         .navbar { background-color: #000; }
         
-        /* 배경 이미지를 .hero (로그인 폼 영역) 안에만 적용 */
+        /* 다크 모드 배경 이미지 및 반투명 그라데이션 */
         .hero { 
-            background: linear-gradient(to bottom, rgba(30, 30, 30, 0.7), rgba(10, 14, 23, 0.9)),
-                        url('../image/main_banner.jpg') center/cover no-repeat; 
+            background: linear-gradient(to bottom, rgba(30, 30, 30, 0.7), rgba(10, 14, 23, 0.9)), 
+                        url('/image/main_banner.jpg') center/cover no-repeat; 
             min-height: 60vh; 
         }
         
@@ -43,26 +32,13 @@
         .btn-primary { background-color: #a020f0; border: none; }
         .btn-primary:hover { background-color: #800080; }
         
-        body.light-mode {
-            background-color: #f8f9fa;
-            color: #333; 
-        }
-
+        /* 라이트 모드 배경 이미지 및 반투명 그라데이션 */
+        body.light-mode { background-color: #f8f9fa; color: #333; }
         body.light-mode .hero {
-            /* 라이트 모드일 때도 .hero 영역에만 밝은 그라데이션 + 아리 이미지 적용 */
-            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.7), rgba(248, 249, 250, 0.9)),
-                        url('../image/main_banner.jpg') center/cover no-repeat; 
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.7), rgba(248, 249, 250, 0.9)), 
+                        url('/image/main_banner.jpg') center/cover no-repeat; 
         }
-
-        body.light-mode h2,
-        body.light-mode .form-label {
-            color: #333; 
-        }
-
-        body.light-mode .navbar-brand,
-        body.light-mode .nav-link {
-            color: #333 !important; 
-        }
+        body.light-mode .navbar-brand, body.light-mode .nav-link { color: #333 !important; }
     </style>
 </head>
 <body>
@@ -89,7 +65,7 @@
                         <a class="nav-link active" aria-current="page" href="#">챔피언</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="main_page_sub/download.html">다운로드</a>
+                        <a class="nav-link active" aria-current="page" href="/main_page_sub/download.html">다운로드</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/login">로그인</a>
@@ -144,12 +120,80 @@
         </div>
     </section>
 
-    <div class="modal fade" id="championModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content" id="modalContent">
+    <section id="searchResults">
+        <div class="search-keyword-header">
+            <h1 id="searchKeywordDisplay"></h1>
+        </div>
+        <div class="search-body">
+            <div class="container-fluid px-0">
+                <div class="row g-0">
+                <div class="col-md-3 col-lg-2 search-sidebar bg-white py-4">
+                    <div class="px-3 mb-3" style="font-size:0.8rem; color:#999; text-transform:uppercase; letter-spacing:0.1em;">카테고리</div>
+                        <div class="search-category-item active" onclick="switchCategory('champion', this)">
+                            챔피언<span class="count" id="champCount">(0)</span>
+                        </div>
+                            <div class="search-category-item" onclick="switchCategory('news', this)">
+                                뉴스<span class="count" id="newsCount">(0)</span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-9 col-lg-10 search-content-area">
+                            <div id="resultChampion">
+                                <h5 class="mb-4" style="color:#333;">챔피언</h5>
+                                <div id="championResultList"></div>
+                            </div>
+                            <div id="resultNews" style="display:none;">
+                            <h5 class="mb-4" style="color:#333;">뉴스</h5>
+                            <div id="newsResultList"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
+        </div>
+    </section>
+
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:9999">
+        <div id="liveToast" class="toast align-items-center text-white bg-success border-0" role="alert">
+            <div class="d-flex">
+                <div class="toast-body" id="toastBody">메시지</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
     </div>
-    </div>
+
+<div class="modal fade" id="championModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" id="modalContent">
+        </div>
+  </div>
+</div>
+
+<script>
+// ID를 변경한 공용 모달을 선택합니다.
+const modal = document.getElementById('championModal');
+
+modal.addEventListener('show.bs.modal', function (event) {
+    const button = event.relatedTarget;
+    
+    // 버튼 없이 자바스크립트(search.js)로 강제 실행된 경우 아래 로직을 무시합니다.
+    if (!button) return; 
+
+    const url = button.getAttribute('data-url'); // 각 버튼의 data-url을 가져옴
+
+    fetch(url)
+        .then(res => {
+            if (!res.ok) throw new Error("데이터를 불러오지 못했습니다.");
+            return res.text();
+        })
+        .then(data => {
+            document.getElementById("modalContent").innerHTML = data;
+        })
+        .catch(err => {
+            console.error(err);
+            document.getElementById("modalContent").innerHTML = "<div class='p-4 text-center'>상세 정보를 준비 중입니다.</div>";
+        });
+});
+</script>
 
     <script src="../js/search.js"></script>
     <script src="../js/input_sha256.js"></script>

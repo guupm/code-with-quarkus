@@ -98,15 +98,82 @@
         </div>
     </section>
 
-    <script src="../js/search.js"></script>
+    <section id="searchResults">
+        <div class="search-keyword-header">
+            <h1 id="searchKeywordDisplay"></h1>
+        </div>
+        <div class="search-body">
+            <div class="container-fluid px-0">
+                <div class="row g-0">
+                <div class="col-md-3 col-lg-2 search-sidebar bg-white py-4">
+                    <div class="px-3 mb-3" style="font-size:0.8rem; color:#999; text-transform:uppercase; letter-spacing:0.1em;">카테고리</div>
+                        <div class="search-category-item active" onclick="switchCategory('champion', this)">
+                            챔피언<span class="count" id="champCount">(0)</span>
+                        </div>
+                            <div class="search-category-item" onclick="switchCategory('news', this)">
+                                뉴스<span class="count" id="newsCount">(0)</span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-9 col-lg-10 search-content-area">
+                            <div id="resultChampion">
+                                <h5 class="mb-4" style="color:#333;">챔피언</h5>
+                                <div id="championResultList"></div>
+                            </div>
+                            <div id="resultNews" style="display:none;">
+                            <h5 class="mb-4" style="color:#333;">뉴스</h5>
+                            <div id="newsResultList"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:9999">
-        <div id="liveToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div id="liveToast" class="toast align-items-center text-white bg-success border-0" role="alert">
             <div class="d-flex">
-                <div class="toast-body" id="toastBody"></div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                <div class="toast-body" id="toastBody">메시지</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="championModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" id="modalContent">
+                </div>
+        </div>
+    </div>
+
+    <script>
+    // ID를 변경한 공용 모달을 선택합니다.
+    const modal = document.getElementById('championModal');
+
+    modal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        
+        // 버튼 없이 자바스크립트(search.js)로 강제 실행된 경우 아래 로직을 무시합니다.
+        if (!button) return; 
+
+        const url = button.getAttribute('data-url'); // 각 버튼의 data-url을 가져옴
+
+        fetch(url)
+            .then(res => {
+                if (!res.ok) throw new Error("데이터를 불러오지 못했습니다.");
+                return res.text();
+            })
+            .then(data => {
+                document.getElementById("modalContent").innerHTML = data;
+            })
+            .catch(err => {
+                console.error(err);
+                document.getElementById("modalContent").innerHTML = "<div class='p-4 text-center'>상세 정보를 준비 중입니다.</div>";
+            });
+    });
+    </script>
+
+    <script src="../js/search.js"></script>
+
 </body>
 </html>
