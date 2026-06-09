@@ -5,8 +5,8 @@ body {
 }
 
 .hero {
-    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), 
-                url('../image/메인 배너.jpg') center/cover no-repeat;
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), 
+                url('../image/main_banner.jpg') center/cover no-repeat;
     min-height: 60vh;
     display: flex;
     align-items: center;
@@ -61,4 +61,33 @@ body {
 
 .accent-purple { 
     color: #a020f0; 
+}
+
+/* 다운로드 페이지의 라이트 모드 스타일 */
+body.light-mode {
+    background-color: #f8f9fa !important; /* 밝은 배경 */
+    color: #333 !important; /* 어두운 글자 */
+}
+
+body.light-mode .table {
+    color: #333 !important; /* 표 글자색 */
+    background-color: #fff !important;
+}
+
+body.light-mode .table thead {
+    background-color: #e9ecef; /* 표 헤더 색상 */
+}
+
+body.light-mode .nav-tabs .nav-link {
+    color: #333 !important; /* 탭 버튼 글자색 */
+}
+
+body.light-mode .nav-tabs .nav-link.active {
+    background-color: #fff !important;
+    border-color: #dee2e6 #dee2e6 #fff !important;
+}
+
+body.light-mode .navbar-brand,
+body.light-mode .nav-link {
+    color: #333 !important; /* 네비게이션 글자색 */
 }

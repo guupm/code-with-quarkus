@@ -13,13 +13,13 @@ public class ChampionResource {
     // 전체 목록 조회
     @GET
     public List<Champion> list() {
-    return Champion.listAll();
+        return Champion.listAll();
     }
 
     // 새 챔피언 추가
     @POST
     @Transactional
     public void add(Champion champion) {
-    champion.persist();
+        champion.persist();
     }
 }
